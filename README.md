@@ -30,20 +30,13 @@ The preferred method of installation is via [Sublime Package Control](https://su
 ## Usage
 
 ```py
-import sublime, os
+import sublime
 
-if os.path.exists(sublime.cache_path() + os.sep + ".on-full-screen"):
+if sublime.active_window().settings().get('fss_on_full_screen'):
     # ST is running on full screen.
 
-if os.path.exists(sublime.cache_path() + os.sep + ".on-distraction-free"):
+if sublime.active_window().settings().get('fss_on_distraction_free'):
     # ST is running on distraction free mode.
-```
-
-In order to determine if FullScreenStatus is installed, you can check the existence of this file:
-
-```py
-if os.path.exists(sublime.cache_path() + os.sep + ".fs-status-installed"):
-    # It is installed.
 ```
 
 ## Source

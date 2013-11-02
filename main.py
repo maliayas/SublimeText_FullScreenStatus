@@ -1,51 +1,43 @@
-import sublime, sublime_plugin, os
-
-plugin_installed_marker = None
-full_screen_marker      = None
-distraction_free_marker = None
+import sublime, sublime_plugin
 
 def plugin_loaded():
-    global plugin_installed_marker, full_screen_marker, distraction_free_marker
+    # Set flags to `false` on plugin load.
+    set_setting('fss_on_full_screen', False)
+    set_setting('fss_on_distraction_free', False)
 
-    # Marker files.
-    plugin_installed_marker = sublime.cache_path() + os.sep + ".fs-status-installed"
-    full_screen_marker      = sublime.cache_path() + os.sep + ".on-full-screen"
-    distraction_free_marker = sublime.cache_path() + os.sep + ".on-distraction-free"
+def plugin_unloaded():
+    remove_setting('fss_on_full_screen')
+    remove_setting('fss_on_distraction_free')
 
-    # Put a marker that indicates this plugin is installed. Otherwise, absence of
-    # `full_screen_marker` and `distraction_free_marker` wouldn't have a meaning.
-    open(plugin_installed_marker, "w+")
+def get_setting(setting):
+    return sublime.active_window().settings().get(setting)
 
-    # Remove any markers on startup that may be left from the previous session. Because
-    # ST can't start on full screen or distraction free mode.
-    try:
-        os.remove(full_screen_marker)
-        os.remove(distraction_free_marker)
-    except:
-        pass
+def set_setting(setting, value):
+    sublime.active_window().settings().set(setting, value)
+
+def remove_setting(setting):
+    sublime.active_window().settings().erase(setting)
 
 class ToggleFullScreenWrapperCommand(sublime_plugin.WindowCommand):
     def run(self):
-        if os.path.exists(full_screen_marker):
-            os.remove(full_screen_marker)
+        if get_setting('fss_on_full_screen'):
+            set_setting('fss_on_full_screen', False)
 
-        elif os.path.exists(distraction_free_marker):
-            os.remove(distraction_free_marker)
+        elif get_setting('fss_on_distraction_free'):
+            set_setting('fss_on_distraction_free', False)
 
         else:
-            open(full_screen_marker, "w+")
+            set_setting('fss_on_full_screen', True)
 
         self.window.run_command("toggle_full_screen")
 
 class ToggleDistractionFreeWrapperCommand(sublime_plugin.WindowCommand):
     def run(self):
-        if os.path.exists(distraction_free_marker):
-            os.remove(distraction_free_marker)
+        if get_setting('fss_on_distraction_free'):
+            set_setting('fss_on_distraction_free', False)
 
         else:
-            if os.path.exists(full_screen_marker):
-                os.remove(full_screen_marker)
-
-            open(distraction_free_marker, "w+")
+            set_setting('fss_on_full_screen', False)
+            set_setting('fss_on_distraction_free', True)
 
         self.window.run_command("toggle_distraction_free")
