@@ -1,0 +1,4 @@
+[
+    { "keys": ["f11"], "command": "toggle_full_screen_wrapper"},
+    { "keys": ["shift+f11"], "command": "toggle_distraction_free_wrapper"}
+]
